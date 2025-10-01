@@ -1,0 +1,23 @@
+- hosts: localhost
+  connection: local
+  vars_files:
+    - group_vars/all/aws_credentials.yml
+
+  tasks:
+    - name: Create EC2 instances
+      amazon.aws.ec2_instance:
+        name: "{{item.name}}"
+        key_name: aws-key-pair
+        instance_type: t2.micro
+        security_groups:
+          - default
+        network_interfaces:
+          - assign_public_ip: true
+        image_id: "{{ item.image }}"
+        region: "{{ aws_region }}"
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+      loop:
+        - { image: "ami-08982f1c5bf93d976", name: "public-compute-instance-1" }
+        - { image: "ami-0360c520857e3138f", name: "public-compute-instance-2" }
+        - { image: "ami-0360c520857e3138f", name: "public-compute-instance-3" }
